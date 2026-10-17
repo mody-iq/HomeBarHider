@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 
+@interface MTLumaDodgePillView : UIView
 static BOOL HBH_IsGrabber(UIView *view) {
     UIView *current = view;
     for (int i = 0; i < 4 && current; i++) {
