@@ -1,20 +1,10 @@
 #import <UIKit/UIKit.h>
-#import <objc/runtime.h>
+
+@interface SBHomeGrabberView : UIView
+@end
 
 @interface MTLumaDodgePillView : UIView
-static BOOL HBH_IsGrabber(UIView *view) {
-    UIView *current = view;
-    for (int i = 0; i < 4 && current; i++) {
-        NSString *name = NSStringFromClass([current class]);
-        if ([name containsString:@"HomeGrabber"]) {
-            return YES;
-        }
-        current = current.superview;
-    }
-    return NO;
-}
-
-%group GrabberHook
+@end
 
 %hook SBHomeGrabberView
 
@@ -25,9 +15,7 @@ static BOOL HBH_IsGrabber(UIView *view) {
 
 - (void)layoutSubviews {
     %orig;
-    if (!self.hidden) {
-        self.hidden = YES;
-    }
+    self.hidden = YES;
 }
 
 - (void)setHidden:(BOOL)hidden {
@@ -40,37 +28,22 @@ static BOOL HBH_IsGrabber(UIView *view) {
 
 %end
 
-%end
-
-%group PillHook
-
 %hook MTLumaDodgePillView
 
 - (void)didMoveToWindow {
     %orig;
-    if (HBH_IsGrabber(self)) {
+    NSString *parentName = NSStringFromClass([self.superview class]);
+    if ([parentName containsString:@"HomeGrabber"]) {
         self.hidden = YES;
     }
 }
 
 - (void)layoutSubviews {
     %orig;
-    if (!self.hidden && HBH_IsGrabber(self)) {
+    NSString *parentName = NSStringFromClass([self.superview class]);
+    if ([parentName containsString:@"HomeGrabber"]) {
         self.hidden = YES;
     }
 }
 
 %end
-
-%end
-
-%ctor {
-    @autoreleasepool {
-        if (objc_getClass("SBHomeGrabberView")) {
-            %init(GrabberHook);
-        }
-        if (objc_getClass("MTLumaDodgePillView")) {
-            %init(PillHook);
-        }
-    }
-}
