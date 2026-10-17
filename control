@@ -6,4 +6,3 @@ Description: Hides the Home Indicator bar at the bottom of the screen
 Maintainer: mody
 Author: mody
 Section: Tweaks
-Depends: firmware (>= 15.0)
